@@ -116,7 +116,6 @@ public class NewMainActivity extends BaseAppActivity implements View.OnClickList
                     Toast.makeText(NewMainActivity.this, "请选择餐桌", Toast.LENGTH_SHORT).show();
                     return;
                 }
-//                startActivity(intent);
                 startActivityForResult(intent, ContantData.MAINMAKEORDERREQUESE);
             }
         });

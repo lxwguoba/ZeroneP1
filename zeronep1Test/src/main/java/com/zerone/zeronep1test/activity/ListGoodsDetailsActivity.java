@@ -37,6 +37,7 @@ import com.zerone.zeronep1test.domain.TableItem;
 import com.zerone.zeronep1test.domain.Worker;
 import com.zerone.zeronep1test.event.AcceptMessage;
 import com.zerone.zeronep1test.event.MessageEvent;
+import com.zerone.zeronep1test.payutils.PayUtils;
 import com.zerone.zeronep1test.utils.AidlUtil;
 import com.zerone.zeronep1test.utils.LoadingUtils;
 import com.zerone.zeronep1test.utils.MapUtilsSetParam;
@@ -309,10 +310,10 @@ public class ListGoodsDetailsActivity extends BaseAppActivity {
                              if (i==0){
                                  print("本店保留",printBean);
                              }else {
-//                                 print("用户留存",printBean);
+                                 print("用户留存",printBean);
                              }
                         }
-                        setPay(pmoney);
+                        PayUtils.pullUPPay(pmoney,ListGoodsDetailsActivity.this);
                         finish();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -606,32 +607,6 @@ public class ListGoodsDetailsActivity extends BaseAppActivity {
              message.obj=hmb;
             handler.sendMessage(message);
 
-        }
-    }
-
-//    启动支付
-    public  void setPay(String money){
-        Log.i("UUUU",money);
-        double dmoney= Double.parseDouble(money)*100;
-        long mone = new Double(dmoney).longValue();
-//      long  mone =Long.parseLong(dmoney+"");
-        Intent intent = new Intent("sunmi.payment.L3");
-        String transId = System.currentTimeMillis()+ "";
-//        intent.putExtra("transId",transId);
-        intent.putExtra("transType", 13);
-//        用户自选
-//        intent.putExtra("paymentType", "-1");
-//        try {
-//            intent.putExtra("amount", mone);
-//        } catch (Exception e) {
-//            Toast.makeText(this, "消费金额填写错误", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-        intent.putExtra("appId", getPackageName());
-        if (Util.isIntentExisting(intent, this)) {
-            startActivity(intent);
-        } else {
-            Toast.makeText(this, "此机器上没有安装L3应用", Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -111,8 +111,8 @@ public class TableActivity extends BaseAppActivity {
             public void onItemClick(View view, int position) {
                 Message message  = new Message();
                  message.what= ContantData.POPSHOW;
-                 message.obj=listt.get(position);
-                 handler.sendMessage(message);
+                message.obj=listt.get(position);
+                handler.sendMessage(message);
                 Utils.getACache(TableActivity.this).put("tableInfo", listt.get(position));
             }
         });

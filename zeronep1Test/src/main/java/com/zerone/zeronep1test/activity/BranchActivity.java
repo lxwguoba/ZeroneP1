@@ -21,12 +21,14 @@ import com.zerone.zeronep1test.db.impl.BranchDao;
 import com.zerone.zeronep1test.db.impl.WorkerTabeDao;
 import com.zerone.zeronep1test.domain.Branch;
 import com.zerone.zeronep1test.domain.Worker;
+import com.zerone.zeronep1test.domain.finish.FinishActivity;
 import com.zerone.zeronep1test.utils.LoadingUtils;
 import com.zerone.zeronep1test.utils.MapUtilsSetParam;
 import com.zerone.zeronep1test.utils.NetUtils;
 import com.zerone.zeronep1test.utils.Utils;
 import com.zyao89.view.zloading.ZLoadingDialog;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -120,19 +122,23 @@ public class BranchActivity extends BaseAppActivity {
                                 worker.setName(array.getJSONObject(i).getString("name"));
                                 worker.setWorkerid(array.getJSONObject(i).getString("workerid"));
                                 worker.setReception_qr(array.getJSONObject(i).getString("reception_qr"));
-                                String avatar = array.getJSONObject(i).getString("avatar");
-                                if ("-1".equals(avatar)){
-                                    //默认图片
-                                    worker.setIcon_thumb("http://img5.imgtn.bdimg.com/it/u=2021991128,2296584601&fm=27&gp=0.jpg");
-                                }else {
-                                    worker.setIcon_thumb(avatar);
-                                }
+//                                String avatar = array.getJSONObject(i).getString("avatar");
+//                                if ("-1".equals(avatar)){
+//                                    //默认图片
+//                                    worker.setIcon_thumb("http://img5.imgtn.bdimg.com/it/u=2021991128,2296584601&fm=27&gp=0.jpg");
+//                                }else {
+//                                    worker.setIcon_thumb(avatar);
+//                                }
                                 workerList.add(worker);
                             }
+                            Log.i("TAG","4444444444488888888888888888888888444444444444");
                             insertIntoWorkerTable(workerList);
+                            Log.i("TAG","444444444444444444444444444444444444444444444");
                             Intent intent = new Intent(BranchActivity.this, CheckWaiterActivity.class);
                             startActivity(intent);
                             finish();
+                            //发送广播 关闭要关闭的页面
+                            EventBus.getDefault().post(new FinishActivity(0,LoginActivity.class));
                         }else {
                             Toast.makeText(BranchActivity.this, "暂无工作人员，请去后台设置工作人员后再登录", Toast.LENGTH_SHORT).show();
                         }

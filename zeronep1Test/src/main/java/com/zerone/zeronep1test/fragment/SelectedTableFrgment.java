@@ -35,6 +35,7 @@ import com.zerone.zeronep1test.db.impl.BranchDao;
 import com.zerone.zeronep1test.domain.TableCatringBean;
 import com.zerone.zeronep1test.domain.TableDBean;
 import com.zerone.zeronep1test.event.ChangeSelectedTab;
+import com.zerone.zeronep1test.utils.AppSharePreferenceMgr;
 import com.zerone.zeronep1test.utils.GetGson;
 import com.zerone.zeronep1test.utils.LoadingUtils;
 import com.zerone.zeronep1test.utils.MapUtilsSetParam;
@@ -186,9 +187,9 @@ public class SelectedTableFrgment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 tableCatAdapter.setPosition(position);
-                 Utils.getACache(getContext()).put("roomid",listroom.get(position).getId() + "");
                  initNetTableList(listroom.get(position).getId() + "");
-                tableCatAdapter.notifyDataSetChanged();
+                 AppSharePreferenceMgr.put(getActivity(),"roomid",listroom.get(position).getId() + "");
+                 tableCatAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -248,6 +249,7 @@ public class SelectedTableFrgment extends Fragment {
         map.put("branchid",Utils.getBranch(getContext()).getId());
         map.put("opp", "gettablenew");
         map.put("roomid", roomid);
+        AppSharePreferenceMgr.put(getActivity(),"roomid",roomid);
         NetUtils.netWorkByMethodPost(getContext(), map, IpConfig.URL, handler, ContantData.GETTABLED);
     }
     Handler handler  = new Handler(){
@@ -316,6 +318,8 @@ public class SelectedTableFrgment extends Fragment {
                             Toast.makeText(getContext(), "结账成功", Toast.LENGTH_SHORT).show();
                             //刷新 桌子数据
                             flushtable();
+                        }else {
+                            Toast.makeText(getContext(), "结账失败", Toast.LENGTH_SHORT).show();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -324,14 +328,13 @@ public class SelectedTableFrgment extends Fragment {
 
                 case ContantData.FLUSH:
                     String table= (String) msg.obj;
-                    Log.i("URLTABLE",table);
 
                     try {
                         jsonObject = new JSONObject(table);
                         int status = jsonObject.getInt("status");
                         if (status==0){
                          //有待修改！！！！！！！！！！！！！！！！！！2018-02-05
-
+                            Toast.makeText(getActivity(),"刷新桌子转态失败",Toast.LENGTH_SHORT).show();
                         }else {
                             Gson gson02 = GetGson.getGson();
                             TableDBean tableDBean01 = gson02.fromJson(table, TableDBean.class);
@@ -341,7 +344,6 @@ public class SelectedTableFrgment extends Fragment {
                             }
                             taAdapter.notifyDataSetChanged();
                         }
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }finally {
@@ -373,7 +375,13 @@ public class SelectedTableFrgment extends Fragment {
         Map<String, String> map = MapUtilsSetParam.getMap(getContext());
         map.put("branchid",Utils.getBranch(getContext()).getId());
         map.put("opp", "gettablenew");
-        map.put("roomid", Utils.getACache(getContext()).getAsString("roomid"));
+        String roomid = (String) AppSharePreferenceMgr.get(getActivity(), "roomid", "-100");
+        if ("-100".equals(roomid)){
+            Toast.makeText(getContext(),"获取桌子分类有问题",Toast.LENGTH_SHORT).show();
+            return;
+        }else {
+            map.put("roomid",roomid);
+        }
         NetUtils.netWorkByMethodPost(getContext(), map, IpConfig.URL, handler, ContantData.FLUSH);
     }
 }

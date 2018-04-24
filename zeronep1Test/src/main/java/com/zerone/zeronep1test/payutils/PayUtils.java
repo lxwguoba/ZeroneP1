@@ -21,7 +21,6 @@ public class PayUtils {
      * @param context 上下文
      */
     public static void pullUPPay(String money, Context context){
-        Log.i("UUUU",money);
         double dmoney= Double.parseDouble(money)*100;
         long mone = new Double(dmoney).longValue();
         Intent intent = new Intent("sunmi.payment.L3");
@@ -29,7 +28,6 @@ public class PayUtils {
         intent.putExtra("transId",transId);
         intent.putExtra("transType", 0);
 //        用户自选 这里可以让用户选择  默认的是让用户自己选
-
         intent.putExtra("paymentType", "-1");
         try {
             intent.putExtra("amount", mone);

@@ -19,11 +19,17 @@ import com.zerone.zeronep1test.contanst.IpConfig;
 import com.zerone.zeronep1test.db.impl.SessionTabeDao;
 import com.zerone.zeronep1test.domain.SessionBean;
 import com.zerone.zeronep1test.domain.UserInfo;
+import com.zerone.zeronep1test.domain.finish.FinishActivity;
+import com.zerone.zeronep1test.utils.AppSharePreferenceMgr;
 import com.zerone.zeronep1test.utils.GetGson;
 import com.zerone.zeronep1test.utils.LoadingUtils;
 import com.zerone.zeronep1test.utils.Utils;
 import com.zerone.zeronep1test.utils.net.HttpRequestDealOutTime;
 import com.zyao89.view.zloading.ZLoadingDialog;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 /**
@@ -47,6 +53,8 @@ public class LoginActivity extends BaseAppActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        //注册广播接受器
+        EventBus.getDefault().register(this);
         initView();
         doListenner();
     }
@@ -91,9 +99,9 @@ public class LoginActivity extends BaseAppActivity {
      * View的初始化
      */
     private void initView() {
-        String namepwd = Utils.getACache(LoginActivity.this).getAsString("namepwd");
         user_name = (EditText) findViewById(R.id.username);
         user_pwd = (EditText) findViewById(R.id.userpwd);
+        String namepwd = (String) AppSharePreferenceMgr.get(LoginActivity.this,"namepwd","");
         if (namepwd!=null&&namepwd.length()>0){
             String[] split = namepwd.split("-");
              user_name.setText(split[0]);
@@ -109,7 +117,7 @@ public class LoginActivity extends BaseAppActivity {
             switch (msg.what){
                 case ContantData.LOGINRESPONSE:
                     String jsonSt = (String) msg.obj;
-
+                        Log.i("URL","登录=========="+jsonSt);
                     try {
                         JSONObject jsonObject  = new JSONObject(jsonSt);
                         int loginstatus = jsonObject.getInt("loginstatus");
@@ -117,13 +125,15 @@ public class LoginActivity extends BaseAppActivity {
                             Gson gson= GetGson.getGson();
                             UserInfo user= gson.fromJson(jsonSt, UserInfo.class);
                             addSessionIntoDB(user.getSession());
-
                         }else {
-
+                          Toast.makeText(LoginActivity.this,"登录失败",Toast.LENGTH_SHORT).show();
                         }
-
                     } catch (JSONException e) {
                         e.printStackTrace();
+                    }finally {
+                        if (dailog!=null){
+                            dailog.dismiss();
+                        }
                     }
                     break;
             }
@@ -139,21 +149,44 @@ public class LoginActivity extends BaseAppActivity {
         try {
             String username = user_name.getText().toString().trim();
             String userpwd = user_pwd.getText().toString().toString().trim();
-            std.del();
             SessionBean sessionBean = new SessionBean("0",session);
-            std.addSession(sessionBean);
+            if (std!=null){
+                std.upSessionBean(sessionBean);
+            }else {
+                std.addSession(sessionBean);
+            }
             Intent intent =new Intent(LoginActivity.this, BranchActivity.class);
             startActivity(intent);
-            finish();
             if (re_box.isChecked()){
                 String  namepwd=username+"-"+userpwd;
-                Utils.getACache(LoginActivity.this).put("namepwd",namepwd);
+                AppSharePreferenceMgr.put(LoginActivity.this,"namepwd",namepwd);
             }
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "登录失败哦", Toast.LENGTH_SHORT).show();
         }finally {
-            dailog.dismiss();
+            if (dailog!=null){
+                dailog.dismiss();
+            }
         }
+    }
+
+    /**
+     * 接收广播发送过来的信息
+     *
+     * @param finishActivity  这个是要关闭的页面
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void messageEventBus( FinishActivity finishActivity) {
+        //接收到要关闭的页面
+         if (finishActivity.getStateCode()==0){
+             LoginActivity.this.finish();
+         }
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //取消广播的注册
+        EventBus.getDefault().unregister(this);
     }
 }

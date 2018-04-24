@@ -28,8 +28,9 @@ public class WorkerTabeDao  extends AbstractDao {
     public void addWorker(Worker worker) throws Exception {
         try {
             db = baseDao.getWritableDatabase();
+//            worker.getIcon_thumb()
             String sql = "insert into workertable (workerid, name,reception_qr,icon_thumb) values (?, ?, ?,?)";
-            String[] param = new String[] { worker.getWorkerid(),worker.getName(),worker.getReception_qr(),worker.getIcon_thumb()};
+            String[] param = new String[] { worker.getWorkerid(),worker.getName(),worker.getReception_qr(),""};
             db.execSQL(sql, param);
             Log.i("URL", "addWorker: 插入成功员工");
         } catch (Exception e) {

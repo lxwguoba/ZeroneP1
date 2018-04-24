@@ -1,4 +1,5 @@
 package com.zerone.zeronep1test.db.impl;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
@@ -113,5 +114,18 @@ public class SessionTabeDao extends AbstractDao {
         } finally {
             db.close();
         }
+    }
+
+    /**
+     * 修改登录后的用户信息
+     *
+     * @param sessionBean  用保存的session
+     */
+    public void upSessionBean(SessionBean sessionBean) {
+        db = baseDao.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("s_value", sessionBean.getS_value());
+        int count = db.update("sessiondb", values, "s_id = ?", new String[]{"0"});
+        values.clear();
     }
 }

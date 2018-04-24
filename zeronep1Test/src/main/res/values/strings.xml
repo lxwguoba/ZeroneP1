@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">智·收银台测试版</string>
+    <string name="app_name">智·收银台(正式版)</string>
     <!--funtion list-->
     <string name="function_all">Comprehensive Test</string>
     <string name="function_qrcode">QR Code</string>

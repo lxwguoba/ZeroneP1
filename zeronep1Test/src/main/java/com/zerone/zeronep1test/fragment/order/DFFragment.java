@@ -30,6 +30,7 @@ import com.zerone.zeronep1test.contanst.ContantData;
 import com.zerone.zeronep1test.contanst.IpConfig;
 import com.zerone.zeronep1test.domain.DaiFuKuanOrderBean;
 import com.zerone.zeronep1test.domain.OrderInfo;
+import com.zerone.zeronep1test.payutils.PayUtils;
 import com.zerone.zeronep1test.utils.LoadingUtils;
 import com.zerone.zeronep1test.utils.MapUtilsSetParam;
 import com.zerone.zeronep1test.utils.NetUtils;
@@ -86,7 +87,6 @@ public class DFFragment extends Fragment {
         LoadingData();
         initView();
         recycleListenner();
-
         return view;
     }
 
@@ -105,7 +105,7 @@ public class DFFragment extends Fragment {
                 map.put("branchid", Utils.getBranch(getContext()).getId());
                 map.put("orderid", id);
                 NetUtils.netWorkByMethodPost(getContext(), map, IpConfig.URL, handler, ContantData.GETORDERLISTDETAILS);
-                setPopWindow();
+
             }
         });
 
@@ -114,7 +114,7 @@ public class DFFragment extends Fragment {
             public void onClick(View v) {
                 //拉起支付 关闭页面
                String money= Utils.getACache(getContext()).getAsString("price");
-//                PayUtils.pullUPPay(money,getActivity());
+                PayUtils.pullUPPay(money,getActivity());
                 mPopupWindow.dismiss();
                 Utils.getACache(getContext()).remove("price");
             }
@@ -324,7 +324,10 @@ public class DFFragment extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                loadingDetails.dismiss();
+
+                    setPopWindow();
+                    loadingDetails.dismiss();
+
                     break;
             }
         }
