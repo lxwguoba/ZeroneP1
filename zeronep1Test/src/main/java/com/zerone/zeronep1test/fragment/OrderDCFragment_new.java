@@ -40,6 +40,7 @@ import com.zerone.zeronep1test.domain.GoodsListBean;
 import com.zerone.zeronep1test.domain.options.OptionsBeanItem;
 import com.zerone.zeronep1test.event.AcceptMessage;
 import com.zerone.zeronep1test.event.GoodsListEvent;
+import com.zerone.zeronep1test.event.RefreshData;
 import com.zerone.zeronep1test.utils.LoadingUtils;
 import com.zerone.zeronep1test.utils.MapUtilsSetParam;
 import com.zerone.zeronep1test.utils.NetUtils;
@@ -260,9 +261,10 @@ public class OrderDCFragment_new extends Fragment implements PersonAdapter.OnSho
                     TableDBean.DataBean tableBean = (TableDBean.DataBean) msg.obj;
                     break;
                 case ContantData.GETGOODSINFO:
+                    goodscatrgoryEntities.clear();
+                    goodsitemEntities.clear();
+                    titlePois.clear();
                     String goodsinfojson = (String) msg.obj;
-                    Log.w("BBB",goodsinfojson);
-                    System.out.print("URL===================="+goodsinfojson);
                     try {
                         int f = 0;
                         int l = 0;
@@ -318,9 +320,79 @@ public class OrderDCFragment_new extends Fragment implements PersonAdapter.OnSho
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
-                        loading_dailog.dismiss();
+                        if (loading_dailog!=null){
+                            loading_dailog.dismiss();
+                        }
                     }
                     break;
+                case 120:
+                    goodscatrgoryEntities.clear();
+                    goodsitemEntities.clear();
+                    titlePois.clear();
+                    String goodsinfojso = (String) msg.obj;
+                    try {
+                        int f = 0;
+                        int l = 0;
+                        boolean isFirst;
+                        JSONObject jsob = new JSONObject(goodsinfojso);
+                        int goodsnum = jsob.getInt("goodsnum");
+                        JSONArray goodslist = jsob.getJSONArray("goodslist");
+//                       //获取分类第一级：：：
+                        List<GoodsListBean.DataEntity.GoodscatrgoryEntity> list = new ArrayList<>();
+                        for (int i = 0; i < goodslist.length(); i++) {
+                            isFirst = true;
+                            GoodsListBean.DataEntity.GoodscatrgoryEntity onBean = new GoodsListBean.DataEntity.GoodscatrgoryEntity();
+                            JSONObject oneobj = goodslist.getJSONObject(i);
+                            onBean.setName(oneobj.getString("name"));
+                            onBean.setC_id(oneobj.getInt("id"));
+                            List<GoodsListBean.DataEntity.GoodscatrgoryEntity.GoodsitemEntity> onelist = new ArrayList<>();
+                            JSONArray gooslist = oneobj.getJSONArray("gooslist");
+                            for (int j = 0; j < gooslist.length(); j++) {
+                                GoodsListBean.DataEntity.GoodscatrgoryEntity.GoodsitemEntity twoBean = new GoodsListBean.DataEntity.GoodscatrgoryEntity.GoodsitemEntity();
+                                JSONObject twoObj = gooslist.getJSONObject(j);
+                                twoBean.setHasoption(twoObj.getString("hasoption"));
+                                twoBean.setId(twoObj.getString("id"));
+                                twoBean.setMarketprice(twoObj.getString("marketprice"));
+                                twoBean.setThumb(twoObj.getString("thumb"));
+                                twoBean.setTotal(twoObj.getString("total"));
+                                twoBean.setTitle(twoObj.getString("title"));
+                                twoBean.setYuanjia(twoObj.getString("yuanjia"));
+                                twoBean.setTotal_in_cart(twoObj.getInt("total_in_cart"));
+                                List<GoodsListBean.DataEntity.GoodscatrgoryEntity.GoodsitemEntity.OptionsBean> option = new ArrayList<>();
+                                JSONArray options = twoObj.getJSONArray("options");
+                                for (int k = 0; k < options.length(); k++) {
+                                    GoodsListBean.DataEntity.GoodscatrgoryEntity.GoodsitemEntity.OptionsBean ob = new GoodsListBean.DataEntity.GoodscatrgoryEntity.GoodsitemEntity.OptionsBean();
+                                    JSONObject jsonObject = options.getJSONObject(k);
+                                    ob.setOptionid(jsonObject.getInt("optionid"));
+                                    ob.setOptionname(jsonObject.getString("optionname"));
+                                    option.add(ob);
+                                }
+                                if (isFirst) {
+                                    titlePois.add(l);
+                                    isFirst = false;
+                                }
+                                twoBean.setOptions(option);
+                                onelist.add(twoBean);
+                                l++;
+                                twoBean.setGb_id(f);
+                                goodsitemEntities.add(twoBean);
+                            }
+                            onBean.setGoodsitem(onelist);
+                            goodscatrgoryEntities.add(onBean);
+                            f++;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (loading_dailog!=null){
+                            loading_dailog.dismiss();
+                        }
+                        personAdapter.notifyDataSetChanged();
+                        mGoodsCategoryListAdapter.notifyDataSetChanged();
+                    }
+                    break;
+
+
 
                 case 10000:
                     //打开选择规格页面
@@ -512,8 +584,28 @@ public class OrderDCFragment_new extends Fragment implements PersonAdapter.OnSho
         }
     }
 
-
-
+    /**
+     *
+     *接受到主页面的刷新任务
+     * @param refreshData
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefreshEvent(RefreshData  refreshData) {
+         if (refreshData.getRefreshCode()==0){
+             Map<String, String> map = MapUtilsSetParam.getMap(getContext());
+             try {
+                 map.put("opp", "goodslist");
+                 map.put("branchid", Utils.getBranch(getContext()).getId());
+                 Log.i("BBB","branchid="+Utils.getBranch(getContext()).getId());
+                 map.put("profile_id", "-1");
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }
+             loading_dailog = LoadingUtils.getDailog(getContext(), Color.RED, "刷新数据中。。。。");
+             loading_dailog.show();
+             NetUtils.netWorkByMethodPost(getContext(), map, IpConfig.URL, handler,120);
+         }
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();

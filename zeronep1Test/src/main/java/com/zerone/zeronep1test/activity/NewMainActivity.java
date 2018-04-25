@@ -27,6 +27,7 @@ import com.zerone.zeronep1test.contanst.ContantData;
 import com.zerone.zeronep1test.domain.TableDBean;
 import com.zerone.zeronep1test.event.ChangeSelectedTab;
 import com.zerone.zeronep1test.event.MessageEvent;
+import com.zerone.zeronep1test.event.RefreshData;
 import com.zerone.zeronep1test.fragment.OrderControlFrgment;
 import com.zerone.zeronep1test.fragment.OrderDCFragment_new;
 import com.zerone.zeronep1test.fragment.SelectedTableFrgment;
@@ -60,34 +61,40 @@ public class NewMainActivity extends BaseAppActivity implements View.OnClickList
     private TextView totalPrice;
     private TextView noShop;
     private TextView title;
+    private LinearLayout refresh_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_main);
         StatusBarCompat.setStatusBarColor(this, Color.parseColor("#ffffff"));
-        title = (TextView) findViewById(R.id.title);
+        initView();
+        dolistenner();
+    }
 
+    /**
+     * view的初始化
+     */
+    private void initView() {
+        refresh_btn = (LinearLayout) findViewById(R.id.refresh_btn);
+
+        title = (TextView) findViewById(R.id.title);
         llIndex = (LinearLayout) findViewById(R.id.llIndex);
         lltwo = (LinearLayout) findViewById(R.id.lltwo);
         llthree = (LinearLayout) findViewById(R.id.llthree);
         llIndex.setOnClickListener(this);
         lltwo.setOnClickListener(this);
         llthree.setOnClickListener(this);
-
         ivIndex = (ImageView) findViewById(R.id.ivIndex);
         ivtwo = (ImageView) findViewById(R.id.ivtwo);
         ivthree = (ImageView) findViewById(R.id.ivthree);
-
         tvIndex = (TextView) findViewById(R.id.tvIndex);
         tvtwo = (TextView) findViewById(R.id.tvtwo);
         tvhree = (TextView) findViewById(R.id.tvthree);
-
         ivIndex.setSelected(true);
         tvIndex.setSelected(true);
         ivCurrent = ivIndex;
         tvCurrent = tvIndex;
-
         fragmentManager = getFragmentManager();
         beginTransaction = fragmentManager.beginTransaction();
         beginTransaction.replace(R.id.ll_main,new OrderDCFragment_new());
@@ -98,7 +105,6 @@ public class NewMainActivity extends BaseAppActivity implements View.OnClickList
         shopCartNum = (TextView) findViewById(R.id.shopCartNum);
         totalPrice = (TextView) findViewById(R.id.totalPrice);
         noShop = (TextView) findViewById(R.id.noShop);
-        dolistenner();
     }
 
     /**
@@ -129,6 +135,14 @@ public class NewMainActivity extends BaseAppActivity implements View.OnClickList
             }
         });
 
+        refresh_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //发送广播到点餐页面刷新数据
+                EventBus.getDefault().post(new RefreshData("主页面发送刷新数据命令", 0));
+            }
+        });
+
     }
 
     @Override
@@ -149,6 +163,7 @@ public class NewMainActivity extends BaseAppActivity implements View.OnClickList
                 ivCurrent = ivIndex;
                 tvIndex.setSelected(true);
                 tvCurrent = tvIndex;
+                refresh_btn.setEnabled(true);
                  Message message  = new Message();
                  message.what=10;
                  handler.sendMessage(message);
@@ -165,6 +180,7 @@ public class NewMainActivity extends BaseAppActivity implements View.OnClickList
                 ivCurrent = ivtwo;
                 tvtwo.setSelected(true);
                 tvCurrent = tvtwo;
+                refresh_btn.setEnabled(false);
                 Message message01  = new Message();
                 message01.what=11;
                 handler.sendMessage(message01);
@@ -181,6 +197,7 @@ public class NewMainActivity extends BaseAppActivity implements View.OnClickList
                 ivCurrent = ivthree;
                 tvhree.setSelected(true);
                 tvCurrent = tvhree;
+                refresh_btn.setEnabled(false);
                 Message message02  = new Message();
                 message02.what=12;
                 handler.sendMessage(message02);
