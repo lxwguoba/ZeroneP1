@@ -8,11 +8,16 @@
         android:layout_height="match_parent"
         android:background="#ffffff"
         >
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_ly"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
         <android.support.v7.widget.RecyclerView
             android:id="@+id/order_recycle"
             android:layout_width="match_parent"
             android:layout_height="480dp"
             android:background="#ffffff"
             android:layout_gravity="center_horizontal" />
+        </android.support.v4.widget.SwipeRefreshLayout>
     </LinearLayout>
 </LinearLayout>

@@ -1,6 +1,7 @@
 package com.zerone.zeronep1test.utils;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.zerone.zeronep1test.db.impl.SessionTabeDao;
 
@@ -26,6 +27,7 @@ public class MapUtilsSetParam {
         map.put("do", "app_api");
         try {
             map.put("session",sessionTabeDao.getSession());
+            Log.i("URL","session==="+sessionTabeDao.getSession());
         } catch (Exception e) {
             e.printStackTrace();
         }

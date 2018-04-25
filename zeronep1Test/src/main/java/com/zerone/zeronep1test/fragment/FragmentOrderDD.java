@@ -54,7 +54,6 @@ public class FragmentOrderDD extends Fragment {
         listcat = (ListView) view.findViewById(R.id.order_carting);
         loAdapter = new ListOrderAdapter(getContext(),liststr);
         listcat.setAdapter(loAdapter);
-
         ordercycle = (RecyclerView)view.findViewById(R.id.order_recycle);
     }
 }

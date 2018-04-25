@@ -122,13 +122,13 @@ public class BranchActivity extends BaseAppActivity {
                                 worker.setName(array.getJSONObject(i).getString("name"));
                                 worker.setWorkerid(array.getJSONObject(i).getString("workerid"));
                                 worker.setReception_qr(array.getJSONObject(i).getString("reception_qr"));
-//                                String avatar = array.getJSONObject(i).getString("avatar");
-//                                if ("-1".equals(avatar)){
-//                                    //默认图片
-//                                    worker.setIcon_thumb("http://img5.imgtn.bdimg.com/it/u=2021991128,2296584601&fm=27&gp=0.jpg");
-//                                }else {
-//                                    worker.setIcon_thumb(avatar);
-//                                }
+                                String avatar = array.getJSONObject(i).getString("avatar");
+                                if ("-1".equals(avatar)){
+                                    //默认图片
+                                    worker.setIcon_thumb("http://img5.imgtn.bdimg.com/it/u=2021991128,2296584601&fm=27&gp=0.jpg");
+                                }else {
+                                    worker.setIcon_thumb(avatar);
+                                }
                                 workerList.add(worker);
                             }
                             Log.i("TAG","4444444444488888888888888888888888444444444444");

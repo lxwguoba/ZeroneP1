@@ -9,8 +9,7 @@ public class IpConfig  {
 
     //    public  static final   String URL = "https://catering.dz-ck.com/api.php?";
     //正式版
-        public  static final   String URL = "https://mi.greengod.cn/site.php?";
+//        public  static final   String URL = "https://mi.greengod.cn/site.php?";
     //测试版
-//    public  static final   String URL ="https://fan.greengod.cn/site.php?";
-
+    public  static final   String URL ="https://fan.greengod.cn/site.php?";
 }

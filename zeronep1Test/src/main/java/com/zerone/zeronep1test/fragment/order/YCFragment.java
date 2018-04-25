@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -73,6 +74,7 @@ public class YCFragment extends Fragment {
     private TextView dingdanjine;
     private TextView seale_money;
     private RelativeLayout sure_relative;
+    private SwipeRefreshLayout mSwipeLayout;
 
 
     @Nullable
@@ -106,6 +108,14 @@ public class YCFragment extends Fragment {
                 setPopWindow();
             }
         });
+
+
+        mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshOrderList();
+            }
+        });
     }
 
     private void LoadingData() {
@@ -122,6 +132,8 @@ public class YCFragment extends Fragment {
         NetUtils.netWorkByMethodPost(getActivity(), mapOrder, IpConfig.URL, handler, ContantData.GETORDERLISTDF);
     }
     private void initView() {
+        //刷新按钮
+        mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_ly);
         ordercycle = (RecyclerView)view.findViewById(R.id.order_recycle);
         GridLayoutManager manager = new GridLayoutManager(getContext(), 1);
         ordercycle.setLayoutManager(manager);
@@ -172,6 +184,29 @@ public class YCFragment extends Fragment {
                     }
                     cycAdapter.notifyDataSetChanged();
                     loading_dailog.dismiss();
+                    break;
+
+                case 120:
+                    String orderJos = (String) msg.obj;
+                    DaiFuKuanOrderBean daiFuKuanOrderBea= JSON.parseObject(orderJos, DaiFuKuanOrderBean.class);
+                    if (daiFuKuanOrderBea.getStatus() == 0) {
+                        return;
+                    }
+                    List<DaiFuKuanOrderBean.DataBean.ListBean> lis = daiFuKuanOrderBea.getData().getList();
+                    getOrderList.clear();
+                    if (lis.size() > 0) {
+                        for (int i = 0; i < lis.size(); i++) {
+                            getOrderList.add(lis.get(i));
+                        }
+                    }
+
+                    cycAdapter.notifyDataSetChanged();
+                    if (mSwipeLayout != null) {
+                        if (mSwipeLayout.isRefreshing()) {
+                            //关闭刷新动画
+                            mSwipeLayout.setRefreshing(false);
+                        }
+                    }
                     break;
 
                 case ContantData.GETORDERLISTDETAILS:
@@ -260,6 +295,20 @@ public class YCFragment extends Fragment {
             }
         }
     };
+
+    /**
+     * 刷新订单列表
+     */
+    private void refreshOrderList() {
+        //获取order的数据
+        Map<String, String> mapOrder = MapUtilsSetParam.getMap(getContext());
+        mapOrder.put("opp", "orderlist");
+        mapOrder.put("branchid", Utils.getBranch(getContext()).getId());
+        mapOrder.put("page", "");
+        mapOrder.put("status", "3");
+        NetUtils.netWorkByMethodPost(getActivity(), mapOrder, IpConfig.URL, handler, 120);
+
+    }
 
 
     /**

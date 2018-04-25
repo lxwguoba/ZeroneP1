@@ -110,9 +110,7 @@ public class OrderDCFragment_new extends Fragment implements PersonAdapter.OnSho
         if(!EventBus.getDefault().isRegistered(this)){//加上判断
             EventBus.getDefault().register(this);//订阅
         }
-
         initView(view);
-        initListenner();
         initLoadingData();
         initOptopnsListenner();
         return view;
@@ -169,6 +167,7 @@ public class OrderDCFragment_new extends Fragment implements PersonAdapter.OnSho
         try {
             map.put("opp", "goodslist");
             map.put("branchid", Utils.getBranch(getContext()).getId());
+            Log.i("BBB","branchid="+Utils.getBranch(getContext()).getId());
             map.put("profile_id", "-1");
         } catch (Exception e) {
             e.printStackTrace();
@@ -176,13 +175,7 @@ public class OrderDCFragment_new extends Fragment implements PersonAdapter.OnSho
         loading_dailog = LoadingUtils.getDailog(getContext(), Color.RED, "获取商品数据中。。。。");
         loading_dailog.show();
         NetUtils.netWorkByMethodPost(getContext(), map, IpConfig.URL, handler, ContantData.GETGOODSINFO);
-
     }
-
-    private void initListenner() {
-
-    }
-
     /**
      * view的实力化
      *
@@ -205,6 +198,7 @@ public class OrderDCFragment_new extends Fragment implements PersonAdapter.OnSho
             opAdapter = new ListViewOptionTitle(getContext(), optionslist, handler);
             oplist.setAdapter(opAdapter);
         //-----------------------------------opopwindow--------------------------------
+
     }
 
     /**
@@ -267,7 +261,8 @@ public class OrderDCFragment_new extends Fragment implements PersonAdapter.OnSho
                     break;
                 case ContantData.GETGOODSINFO:
                     String goodsinfojson = (String) msg.obj;
-                    Log.i("BBB",goodsinfojson);
+                    Log.w("BBB",goodsinfojson);
+                    System.out.print("URL===================="+goodsinfojson);
                     try {
                         int f = 0;
                         int l = 0;
