@@ -400,6 +400,22 @@ public class NewMainActivity extends BaseAppActivity implements View.OnClickList
                     break;
                 case 10:
                     title.setText("点餐");
+                    android.app.FragmentManager fragmentManager = getFragmentManager();
+                    android.app.FragmentTransaction beginTransaction = fragmentManager
+                            .beginTransaction();
+                    ivIndex.setSelected(true);
+                    tvIndex.setSelected(true);
+                    ivCurrent = ivIndex;
+                    tvCurrent = tvIndex;
+                    ivthree.setSelected(false);
+                    tvhree.setSelected(false);
+//                    tvCurrent = tvhree;
+//                    ivCurrent = ivthree;
+                    beginTransaction.replace(R.id.ll_main, new OrderDCFragment_new());
+                    shopCartMain.setVisibility(View.VISIBLE);
+                    shopCartMain.startAnimation(AnimationUtil.createInAnimation(NewMainActivity.this, shopCartMain.getMeasuredHeight()));
+                    beginTransaction.commit();
+
                     break;
                 case 11:
                     title.setText("订单");
@@ -423,17 +439,6 @@ public class NewMainActivity extends BaseAppActivity implements View.OnClickList
         if (event==null){
             return;
         }
-        android.app.FragmentManager fragmentManager = getFragmentManager();
-        android.app.FragmentTransaction beginTransaction = fragmentManager
-                .beginTransaction();
-        ivIndex.setSelected(true);
-        tvIndex.setSelected(true);
-        ivCurrent = ivIndex;
-        tvCurrent = tvIndex;
-        beginTransaction.replace(R.id.ll_main, new OrderDCFragment_new());
-        shopCartMain.setVisibility(View.VISIBLE);
-        shopCartMain.startAnimation(AnimationUtil.createInAnimation(NewMainActivity.this, shopCartMain.getMeasuredHeight()));
-        beginTransaction.commit();
         Message message  = new Message();
         message.what=10;
         handler.sendMessage(message);

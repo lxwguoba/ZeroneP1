@@ -51,17 +51,10 @@ public class ResultActivity extends BaseAppActivity {
             // 交易失败
             Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show();
             Log.e(TAG, errorMsg);
-            result_info.setText("支付失败！");
+            result_info.setText(errorMsg);
             result_info.setTextColor(Color.parseColor("#ff0000"));
             result_iv.setImageResource(R.mipmap.pay_fails);
-            if (errorCode==401){
-                result_tv.setText("交易失败");
-            }else  if (errorCode== 418){
-                result_tv.setText("支付取消");
-            }else {
-                result_tv.setText("支付失败！！！！");
-            }
-            result_tv.setText("Result:" + resultInfo);
+//            result_tv.setText("Result:" + resultInfo);
         }
         pay_complete.setOnClickListener(new View.OnClickListener() {
             @Override

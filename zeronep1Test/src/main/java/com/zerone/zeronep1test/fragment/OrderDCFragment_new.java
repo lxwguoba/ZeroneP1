@@ -532,7 +532,7 @@ public class OrderDCFragment_new extends Fragment implements PersonAdapter.OnSho
             @Override
             public void onItemClick(View view, int position) {
                     //+ position + 2
-                recyclerView.scrollToPosition(titlePois.get(position));
+                recyclerView.scrollToPosition(titlePois.get(position)+position+2);
                 mGoodsCategoryListAdapter.setCheckPosition(position);
             }
         });
